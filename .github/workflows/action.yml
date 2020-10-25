@@ -17,7 +17,8 @@ jobs:
       - name: Install dependencies
         run: npm install # 安装依赖
       - name: Run autosend
-        run: username password # 运行
         env:
-          username: ${{secrets.TEXTNOW_USERNAME}}
-          password: ${{secrets.TEXTNOW_PASSWORD}}
+          TEXTNOW_USERNAME: ${{secrets.TEXTNOW_USERNAME}} # 获取并设置定义好的用户名变量值
+          TEXTNOW_PASSWORD: ${{secrets.TEXTNOW_PASSWORD}} # 获取并设置定义好的用户密码变量值
+        run: |
+          node index.js

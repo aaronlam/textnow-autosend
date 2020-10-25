@@ -1,7 +1,9 @@
 name: "TextNow Autosend"
 on:
+  push:
+    branches: main
   schedule: # 触发机制为定时任务
-    - cron: '0 0 * * *' # 每天的0点进行触发
+    - cron: "0 0 * * *" # 每天的0点进行触发
 jobs:
   autosend:
     runs-on: ubuntu-latest # 运行环境为最新的Ubuntu
@@ -15,7 +17,8 @@ jobs:
       - name: Install dependencies
         run: npm install # 安装依赖
       - name: Run autosend
-        run: username password # 运行
         env:
-          username: ${{secrets.TEXTNOW_USERNAME}}
-          password: ${{secrets.TEXTNOW_PASSWORD}}
+          TEXTNOW_USERNAME: ${{secrets.TEXTNOW_USERNAME}} # 获取并设置定义好的用户名变量值
+          TEXTNOW_PASSWORD: ${{secrets.TEXTNOW_PASSWORD}} # 获取并设置定义好的用户密码变量值
+        run: |
+          node index.js

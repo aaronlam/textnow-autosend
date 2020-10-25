@@ -43,12 +43,16 @@
       cookies = await textNowHelper.logIn(page, client, username, password);
     }
 
-    // Save cookies to file
-    console.log("Successfully logged into TextNow!");
-    await fs.writeFile(
-      path.resolve(__dirname, ".cache/cookies.json"),
-      JSON.stringify(cookies)
-    );
+    try {
+      console.log("Successfully logged into TextNow!");
+      // Save cookies to file
+      await fs.writeFile(
+        path.resolve(__dirname, ".cache/cookies.json"),
+        JSON.stringify(cookies)
+      );
+    } catch (error) {
+      console.log("Failed to save cookies to file.");
+    }
 
     // Select a conversation using recipient info
     console.log("Selecting conversation...");
