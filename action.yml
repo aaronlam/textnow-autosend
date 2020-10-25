@@ -1,0 +1,21 @@
+name: "TextNow Autosend"
+on:
+  schedule: # 触发机制为定时任务
+    - cron '0 0 * * *' # 每天的0点进行触发
+jobs:
+  autosend:
+    runs-on: ubuntu-latest # 运行环境为最新的Ubuntu
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # 使用官方提供的checkout 2.0版本获取代码
+      - name: Setup node.js
+        uses: actions/setup-node@v1 # 使用官方提供的setup-node 1.0版本配置node环境
+        with:
+          node-version: "12.x" # 使用node 12版本作为运行环境
+      - name: Install dependencies
+        run: npm install # 安装依赖
+      - name: Run autosend
+        run: $username $password # 运行
+        env:
+          username: ${{secrets.TEXTNOW_USERNAME}}
+          password: ${{secrets.TEXTNOW_PASSWORD}}
