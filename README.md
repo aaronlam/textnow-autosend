@@ -10,11 +10,24 @@
 
 ## Usage
 
+### 1. Server Side
+
 Modify config file, and excute script on the command line:
 
 ```bash
     npm install
     # or "yarn install"
+
     npm start
     # or "yarn start"
 ```
+
+### 2. GitHub Actions
+
+1. Fork repository
+2. Setting repository secrets for send parameters
+   1. TEXTNOW_USERNAME
+   2. TEXTNOW_PASSWORD
+   3. TEXTNOW_RECIPIENT
+   4. TEXTNOW_MESSAGE
+3. Done
