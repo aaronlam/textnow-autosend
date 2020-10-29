@@ -6,10 +6,10 @@
   const textNowHelper = require("./utils/helper");
   const config = require("./config");
   const {
-    username = "",
-    password = "",
-    recipient = "(726) 666-0002",
-    message = "message",
+    username,
+    password,
+    recipient,
+    message,
   } = config;
 
   let browser = null;
