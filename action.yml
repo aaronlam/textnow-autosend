@@ -1,9 +1,9 @@
 name: "TextNow Autosend"
 on:
-  push:
+  push: # 触发机制为push操作
     branches: main
   schedule: # 触发机制为定时任务
-    - cron: "0 0 * * *" # 每天的0点进行触发
+    - cron: "*/60 * * * *" # 每小时自动触发
 jobs:
   autosend:
     runs-on: ubuntu-latest # 运行环境为最新的Ubuntu
