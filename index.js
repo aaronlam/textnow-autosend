@@ -17,8 +17,7 @@
 
   try {
     browser = await puppeteer.launch({ 
-      headless: true,
-      timeout: 1000 * 60 * 5
+      headless: true
     });
     page = await browser.newPage();
     const client = await page.target().createCDPSession();
