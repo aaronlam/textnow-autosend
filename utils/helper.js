@@ -14,6 +14,8 @@ module.exports.logIn = async (page, client, username, password) => {
     }),
     page.waitForNavigation({ waitUtil: "networkidle2" }),
   ]);
+  
+  await page.waitFor(5000);
 
   if (username && password) {
     await page.type("#txt-username", username);
