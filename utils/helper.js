@@ -9,7 +9,6 @@
 module.exports.logIn = async (page, client, username, password) => {
   await Promise.all([
     page.goto("https://www.textnow.com/login", {
-      waitUntil: 'load',
       timeout: 1000 * 60 * 5
     }),
     page.waitForNavigation({ waitUtil: "networkidle2" }),
