@@ -16,7 +16,10 @@
   let page = null;
 
   try {
-    browser = await puppeteer.launch({ headless: true });
+    browser = await puppeteer.launch({ 
+      headless: true,
+      timeout: 1000 * 60 * 5
+    });
     page = await browser.newPage();
     const client = await page.target().createCDPSession();
     let cookies = null;
