@@ -4,6 +4,7 @@ on:
     branches: main
   schedule: # 触发机制为定时任务
     - cron: "44 4 * * *" # 每天4点44分自动执行
+    - cron: "44 16 * * *" # 每天16点44分自动执行
 jobs:
   autosend:
     runs-on: ubuntu-latest # 运行环境为最新的Ubuntu
