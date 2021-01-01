@@ -11,8 +11,6 @@ module.exports.logIn = async (page, client, username, password) => {
     page.goto("https://www.textnow.com/login"),
     page.waitForNavigation({ waitUtil: "networkidle2" }),
   ]);
-  
-  await page.waitFor(5000);
 
   if (username && password) {
     await page.type("#txt-username", username);
@@ -74,4 +72,16 @@ module.exports.sendMessage = async (page, message) => {
   await page.waitFor(500);
   await page.keyboard.press("Enter");
   await page.waitFor(5000);
+};
+
+/**
+ * Encipher string and return the result
+ * @param {string} str crypto string
+ */
+module.exports.md5 = (str) => {
+  const crypto = require("crypto");
+  const md5 = crypto.createHash("md5");
+  md5.update(str, "utf8");
+
+  return md5.digest("hex").toUpperCase();
 };

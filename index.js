@@ -1,23 +1,17 @@
-(async () => {
+const actionFunc = async (username, password, recipient, message) => {
   console.log("textnow bot start...");
   const path = require("path");
   const fs = require("fs").promises;
   const puppeteer = require("puppeteer");
   const textNowHelper = require("./utils/helper");
-  const config = require("./config");
-  const {
-    username,
-    password,
-    recipient,
-    message,
-  } = config;
 
   let browser = null;
   let page = null;
+  let md5Username = textNowHelper.md5(username).substr(0, 8);
 
   try {
-    browser = await puppeteer.launch({ 
-      headless: true
+    browser = await puppeteer.launch({
+      headless: true,
     });
     page = await browser.newPage();
     const client = await page.target().createCDPSession();
@@ -27,7 +21,7 @@
     try {
       console.log("Importing existing cookies...");
       const cookiesJSON = await fs.readFile(
-        path.resolve(__dirname, ".cahce/cookies.json")
+        path.resolve(__dirname, `.cahce/${md5Username}.cookies.json`)
       );
       cookies = JSON.parse(cookiesJSON);
     } catch (error) {
@@ -49,7 +43,7 @@
       console.log("Successfully logged into TextNow!");
       // Save cookies to file
       await fs.writeFile(
-        path.resolve(__dirname, ".cache/cookies.json"),
+        path.resolve(__dirname, `.cahce/${md5Username}.cookies.json`),
         JSON.stringify(cookies)
       );
     } catch (error) {
@@ -79,4 +73,27 @@
 
     process.exit(1);
   }
+};
+
+(async () => {
+  console.log("start...");
+  const config = require("./config");
+
+  const { username, password, recipient, message } = config;
+  const arrUsername = username.split("|");
+  const arrPassword = password.split("|");
+  if (arrUsername.length === arrPassword.length) {
+    for (let i = 0, length = arrUsername.length; i < length; i++) {
+      const strUsername = arrUsername[i];
+      const strPassword = arrPassword[i];
+
+      console.log(`User:${strUsername} start...`);
+      await actionFunc(strUsername, strPassword, recipient, message);
+      console.log(`User:${strUsername} end...`);
+    }
+  } else {
+    console.log("User information is error.");
+  }
+
+  console.log("end...");
 })();
