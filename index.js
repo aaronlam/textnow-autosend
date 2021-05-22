@@ -1,8 +1,10 @@
-const actionFunc = async (username, password, recipient, message) => {
+const actionFunc = async (username, password, recipient, message, captchaToken) => {
   console.log("textnow bot start...");
   const path = require("path");
   const fs = require("fs").promises;
-  const puppeteer = require("puppeteer");
+  const puppeteer = require("puppeteer-extra");
+  const RecaptchaPlugin = require("puppeteer-extra-plugin-recaptcha");
+  const StealthPlugin = require("puppeteer-extra-plugin-stealth");
   const textNowHelper = require("./utils/helper");
 
   let browser = null;
@@ -10,10 +12,28 @@ const actionFunc = async (username, password, recipient, message) => {
   let md5Username = textNowHelper.md5(username).substr(0, 8);
 
   try {
+    puppeteer.use(StealthPlugin());
+
+    puppeteer.use(
+      RecaptchaPlugin({
+        provider: {
+          id: '2captcha',
+          token: captchaToken,
+        },
+        visualFeedback: true,
+      })
+    );
+
     browser = await puppeteer.launch({
       headless: true,
+      args: [
+        '--disable-features=IsolateOrigins,site-per-process',
+        '--flag-switches-begin --disable-site-isolation-trials --flag-switches-end'
+      ],
     });
+
     page = await browser.newPage();
+
     const client = await page.target().createCDPSession();
     let cookies = null;
 
@@ -21,7 +41,7 @@ const actionFunc = async (username, password, recipient, message) => {
     try {
       console.log("Importing existing cookies...");
       const cookiesJSON = await fs.readFile(
-        path.resolve(__dirname, `.cahce/${md5Username}.cookies.json`)
+        path.resolve(__dirname, `.cache/${md5Username}.cookies.json`)
       );
       cookies = JSON.parse(cookiesJSON);
     } catch (error) {
@@ -41,11 +61,11 @@ const actionFunc = async (username, password, recipient, message) => {
 
     try {
       console.log("Successfully logged into TextNow!");
-      // Save cookies to file
-      await fs.writeFile(
-        path.resolve(__dirname, `.cahce/${md5Username}.cookies.json`),
-        JSON.stringify(cookies)
-      );
+      const cache_file_path = path.resolve(__dirname, `.cache/${md5Username}.cookies.json`);
+      // Create directory, and save cookies to file.
+      await fs.mkdir(path.dirname(cache_file_path), { recursive: true }).then(() => {
+        fs.writeFile(cache_file_path, JSON.stringify(cookies));
+      });
     } catch (error) {
       console.log("Failed to save cookies to file.");
     }
@@ -79,7 +99,7 @@ const actionFunc = async (username, password, recipient, message) => {
   console.log("start...");
   const config = require("./config");
 
-  const { username, password, recipient, message } = config;
+  const { username, password, recipient, message, captchaToken } = config;
   const arrUsername = username.split("|");
   const arrPassword = password.split("|");
   if (arrUsername.length === arrPassword.length) {
@@ -88,7 +108,7 @@ const actionFunc = async (username, password, recipient, message) => {
       const strPassword = arrPassword[i];
 
       console.log(`User:${strUsername} start...`);
-      await actionFunc(strUsername, strPassword, recipient, message);
+      await actionFunc(strUsername, strPassword, recipient, message, captchaToken);
       console.log(`User:${strUsername} end...`);
     }
   } else {

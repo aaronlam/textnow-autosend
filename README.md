@@ -7,13 +7,21 @@
 ### 1. GitHub Actions
 
 1.  Fork repository
-2.  Setting repository secrets for autosend parameters
+2.  Goto https://2captcha.com/
+    -> Registration (If you haven't account)
+    -> I'm developer
+    -> Get API KEY from Account settings, this is CAPTCHA_TOKEN
+    -> Payment funds abount 3 USD to you account
+    (Because each API call requires 0.00299 USD, and we can implement cookie cache to pass them).
+3.  Setting repository secrets for autosend parameters
     * TEXTNOW_USERNAME
     * TEXTNOW_PASSWORD
     * TEXTNOW_RECIPIENT
     * TEXTNOW_MESSAGE
-3.  Change actions permissions to allow all actions
-4.  Done, it will every hour trigger autosend action
+    * CAPTCHA_TOKEN
+    * CACHE_NAME
+4.  Change actions permissions to allow all actions
+5.  Done, it will every hour trigger autosend action
 
 ### 2. Server Side
 

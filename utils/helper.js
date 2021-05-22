@@ -9,8 +9,21 @@
 module.exports.logIn = async (page, client, username, password) => {
   await Promise.all([
     page.goto("https://www.textnow.com/login"),
+    page.setDefaultNavigationTimeout(0),
     page.waitForNavigation({ waitUtil: "networkidle2" }),
   ]);
+
+  // Resolve captcha if found.
+  if (await page.$('div.cf-captcha-container') !== null) {
+    console.log('hCaptcha was found, try to solve.');
+
+    await page.waitForSelector('iframe[title~="hCaptcha"]');
+
+    await Promise.all([
+      page.solveRecaptchas(),
+      page.waitForNavigation(),
+    ]);
+  }
 
   if (username && password) {
     await page.type("#txt-username", username);
@@ -45,19 +58,19 @@ module.exports.selectConversation = async (page, recipient) => {
     page.waitForNavigation({ waitUtil: "networkidle2" }),
   ]);
 
-  await page.waitFor(5000);
+  await page.waitForTimeout(5000);
 
   await page.$eval("#newText", (element) => element.click());
-  await page.waitFor(500);
+  await page.waitForTimeout(500);
 
   const recipientField = await page.waitForSelector(
     ".newConversationTextField"
   );
-  await page.waitFor(500);
+  await page.waitForTimeout(500);
   await recipientField.type(recipient);
-  await page.waitFor(500);
+  await page.waitForTimeout(500);
   await page.keyboard.press("Enter");
-  await page.waitFor(3000);
+  await page.waitForTimeout(3000);
 };
 
 /**
@@ -67,11 +80,11 @@ module.exports.selectConversation = async (page, recipient) => {
  */
 module.exports.sendMessage = async (page, message) => {
   const messageField = await page.waitForSelector("#text-input");
-  await page.waitFor(500);
+  await page.waitForTimeout(500);
   await messageField.type(message);
-  await page.waitFor(500);
+  await page.waitForTimeout(500);
   await page.keyboard.press("Enter");
-  await page.waitFor(5000);
+  await page.waitForTimeout(5000);
 };
 
 /**
