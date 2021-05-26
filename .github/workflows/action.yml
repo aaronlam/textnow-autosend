@@ -2,6 +2,8 @@ name: "TextNow Autosend"
 on:
   push: # 触发机制为push操作
     branches: main
+  workflow_dispatch:
+    
   schedule: # 触发机制为定时任务
     - cron: "44 4 * * *" # 每天4点44分自动执行
     - cron: "44 16 * * *" # 每天16点44分自动执行
