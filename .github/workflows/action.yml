@@ -1,5 +1,4 @@
 name: "TextNow Auto-send"
-description: Auto-send TextNow messages to keep phone live.
 on:
   push: # 触发机制为push操作
     branches: main
