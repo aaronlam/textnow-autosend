@@ -8,30 +8,26 @@
  */
 module.exports.logIn = async (page, client, username, password) => {
   await Promise.all([
-    page.goto("https://www.textnow.com/login"),
-    page.waitForNavigation({ waitUtil: "networkidle2" }),
+    page.goto('https://www.textnow.com/login'),
+    page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
 
   if (username && password) {
-    await page.type("#txt-username", username);
-    await page.type("#txt-password", password);
+    await page.type('#txt-username', username);
+    await page.type('#txt-password', password);
 
-    const logInButton = await page.waitForSelector("#btn-login");
+    const logInButton = await page.waitForSelector('#btn-login');
     await Promise.all([logInButton.click(), page.waitForNavigation()]);
 
-    const cookies = (await client.send("Network.getAllCookies")).cookies;
-
-    return cookies;
+    return (await client.send('Network.getAllCookies')).cookies;
   }
 
-  const isLoggedIn = page.url().includes("/messaging");
+  const isLoggedIn = page.url().includes('/messaging');
   if (!isLoggedIn) {
-    throw new Error("Deteacted invalid or expires cookies");
+    throw new Error('Deteacted invalid or expires cookies');
   }
 
-  const cookies = (await client.send("Network.getAllCookies")).cookies;
-
-  return cookies;
+  return (await client.send('Network.getAllCookies')).cookies;
 };
 
 /**
@@ -41,23 +37,23 @@ module.exports.logIn = async (page, client, username, password) => {
  */
 module.exports.selectConversation = async (page, recipient) => {
   await Promise.all([
-    page.goto("https://www.textnow.com/messaging"),
-    page.waitForNavigation({ waitUtil: "networkidle2" }),
+    page.goto('https://www.textnow.com/messaging'),
+    page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
 
-  await page.waitFor(5000);
+  await page.waitForTimeout(5000);
 
-  await page.$eval("#newText", (element) => element.click());
-  await page.waitFor(500);
+  await page.$eval('#newText', (element) => element.click());
+  await page.waitForTimeout(500);
 
   const recipientField = await page.waitForSelector(
-    ".newConversationTextField"
+      '.newConversationTextField',
   );
-  await page.waitFor(500);
+  await page.waitForTimeout(500);
   await recipientField.type(recipient);
-  await page.waitFor(500);
-  await page.keyboard.press("Enter");
-  await page.waitFor(3000);
+  await page.waitForTimeout(500);
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(3000);
 };
 
 /**
@@ -66,12 +62,12 @@ module.exports.selectConversation = async (page, recipient) => {
  * @param {string } message Message content
  */
 module.exports.sendMessage = async (page, message) => {
-  const messageField = await page.waitForSelector("#text-input");
-  await page.waitFor(500);
+  const messageField = await page.waitForSelector('#text-input');
+  await page.waitForTimeout(500);
   await messageField.type(message);
-  await page.waitFor(500);
-  await page.keyboard.press("Enter");
-  await page.waitFor(5000);
+  await page.waitForTimeout(500);
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(5000);
 };
 
 /**
@@ -79,9 +75,9 @@ module.exports.sendMessage = async (page, message) => {
  * @param {string} str crypto string
  */
 module.exports.md5 = (str) => {
-  const crypto = require("crypto");
-  const md5 = crypto.createHash("md5");
-  md5.update(str, "utf8");
+  const crypto = require('crypto');
+  const md5 = crypto.createHash('md5');
+  md5.update(str, 'utf8');
 
-  return md5.digest("hex").toUpperCase();
+  return md5.digest('hex').toUpperCase();
 };
