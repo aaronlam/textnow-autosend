@@ -101,7 +101,6 @@ const actionFunc = async (username, password, cookies, recipient, message) => {
   const arrUsername = username.split('|');
   const arrPassword = password.split('|');
   const arrCookies = cookies.split('|');
-  console.log(cookies);
   if (arrUsername.length === arrPassword.length) {
     for (let i = 0, length = arrUsername.length; i < length; i++) {
       const strUsername = arrUsername[i];
