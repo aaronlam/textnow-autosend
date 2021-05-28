@@ -7,13 +7,20 @@
 ### 1. GitHub Actions
 
 1. Fork repository
+
 2. Setting repository secrets for auto-send parameters, for multi-users, split them with "|"
-    * TEXTNOW_USERNAME
-    * TEXTNOW_PASSWORD
-    * TEXTNOW_COOKIES
-    * TEXTNOW_RECIPIENT
-    * TEXTNOW_MESSAGE
+
+    | Name              | Description                                                  |
+    | ----------------- | ------------------------------------------------------------ |
+    | TEXTNOW_USERNAME  | TextNow username to login, if multi, use "\|" to split.      |
+    | TEXTNOW_PASSWORD  | TextNow password to login, if multi, use "\|" to split.      |
+    | TEXTNOW_COOKIES   | TextNow cookies to auto login, base64 encoded, and must with username defined, if multi, use "\|" to split. |
+    | TEXTNOW_RECIPIENT | Auto-send recipient, if not defined, "(726) 666-0002" will be used. |
+    | TEXTNOW_MESSAGE   | Auto-send message, if not defined, "auto-send message" will be used. |
+    | CAPTCHA_TOKEN     | 2captcha token, if defined, hCaptcha will be auto-resolved.  |
+
 3. Change actions permissions to allow all actions
+
 4. Done, it will every hour trigger auto-send action
 
 ### 2. Server Side
