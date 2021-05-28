@@ -10,8 +10,21 @@ module.exports.logIn = async (
     page, client, username = undefined, password = undefined) => {
   await Promise.all([
     page.goto('https://www.textnow.com/login'),
+    page.setDefaultNavigationTimeout(0),
     page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
+
+  // Resolve captcha if found.
+  if (await page.$('div.cf-captcha-container') !== null) {
+    console.log('hCaptcha was found, try to solve.');
+
+    await page.waitForSelector('iframe[title~="hCaptcha"]');
+
+    await Promise.all([
+      page.solveRecaptchas(),
+      page.waitForNavigation(),
+    ]);
+  }
 
   if (username && password) {
     await page.type('#txt-username', username);

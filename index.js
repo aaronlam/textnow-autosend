@@ -1,14 +1,18 @@
-const actionFunc = async (username, password, cookies, recipient, message) => {
+const actionFunc = async (
+    username, password, cookies, recipient, message, captchaToken) => {
   console.log('TextNow bot start...');
   const path = require('path');
   const fs = require('fs').promises;
-  const puppeteer = require('puppeteer');
+  const puppeteer = require('puppeteer-extra');
+  const recaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
+  const stealthPlugin = require('puppeteer-extra-plugin-stealth');
   const textNowHelper = require('./utils/helper');
 
   let browser = null;
   let page = null;
   let md5Username = textNowHelper.md5(username);
 
+  // Make cache folder
   const cacheFolder = path.resolve(__dirname, '.cache');
   try {
     await fs.access(cacheFolder);
@@ -17,12 +21,28 @@ const actionFunc = async (username, password, cookies, recipient, message) => {
   }
 
   try {
-    let proxyServer = process.env.HTTP_PROXY ?
-        `--proxy-server=${process.env.HTTP_PROXY}` :
-        '';
+    puppeteer.use(stealthPlugin());
+    if (captchaToken) {
+      puppeteer.use(
+          recaptchaPlugin({
+            provider: {
+              id: '2captcha',
+              token: captchaToken,
+            },
+            visualFeedback: true,
+          }),
+      );
+    }
+
     browser = await puppeteer.launch({
       headless: true,
-      args: [proxyServer],
+      args: [
+        process.env.HTTP_PROXY ?
+            `--proxy-server=${process.env.HTTP_PROXY}` :
+            '',
+        '--disable-features=IsolateOrigins,site-per-process',
+        '--flag-switches-begin --disable-site-isolation-trials --flag-switches-end',
+      ],
     });
     page = await browser.newPage();
     const client = await page.target().createCDPSession();
@@ -97,7 +117,14 @@ const actionFunc = async (username, password, cookies, recipient, message) => {
   console.log('Start...');
   const config = require('./config');
 
-  const {username, password, cookies, recipient, message} = config;
+  const {
+    username,
+    password,
+    cookies,
+    recipient,
+    message,
+    captchaToken,
+  } = config;
   const arrUsername = username.split('|');
   const arrPassword = password.split('|');
   const arrCookies = cookies.split('|');
@@ -108,7 +135,7 @@ const actionFunc = async (username, password, cookies, recipient, message) => {
       const strCookies = arrCookies[i];
       console.log(`User: ${strUsername} start...`);
       await actionFunc(strUsername, strPassword, strCookies,
-          recipient, message);
+          recipient, message, captchaToken);
       console.log(`User: ${strUsername} end...`);
     }
   } else {
