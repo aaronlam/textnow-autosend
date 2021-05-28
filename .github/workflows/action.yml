@@ -1,9 +1,10 @@
-name: "TextNow Autosend"
+name: "TextNow Auto-send"
+description: Auto-send TextNow messages to keep phone live.
 on:
   push: # 触发机制为push操作
     branches: main
   workflow_dispatch:
-    
+
   schedule: # 触发机制为定时任务
     - cron: "44 4 * * *" # 每天4点44分自动执行
     - cron: "44 16 * * *" # 每天16点44分自动执行
