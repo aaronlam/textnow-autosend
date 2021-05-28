@@ -29,7 +29,9 @@ const actionFunc = async (username, password, cookies, recipient, message) => {
 
     try {
       console.log('Importing cookies from environment...');
-      cookies = JSON.parse(Buffer.from(cookies, 'base64').toString());
+      const cookiesString = Buffer.from(cookies, 'base64').toString();
+      console.log(cookiesString);
+      cookies = JSON.parse(cookiesString);
     } catch (error) {
       console.log(`Environment cookies is invalid format: ${error}`);
       try {
