@@ -6,7 +6,8 @@
  * @param {string} password Optional account credential
  * @return {object} Updated login cookies
  */
-module.exports.logIn = async (page, client, username, password) => {
+module.exports.logIn = async (
+    page, client, username = undefined, password = undefined) => {
   await Promise.all([
     page.goto('https://www.textnow.com/login'),
     page.waitForNavigation({waitUtil: 'networkidle2'}),
@@ -24,7 +25,7 @@ module.exports.logIn = async (page, client, username, password) => {
 
   const isLoggedIn = page.url().includes('/messaging');
   if (!isLoggedIn) {
-    throw new Error('Deteacted invalid or expires cookies');
+    throw new Error('Detected invalid or expires cookies');
   }
 
   return (await client.send('Network.getAllCookies')).cookies;
