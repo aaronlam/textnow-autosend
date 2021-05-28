@@ -17,9 +17,12 @@ const actionFunc = async (username, password, cookies, recipient, message) => {
   }
 
   try {
+    let proxyServer = process.env.HTTP_PROXY ?
+        `--proxy-server=${process.env.HTTP_PROXY}` :
+        '';
     browser = await puppeteer.launch({
       headless: true,
-      args: [`--proxy-server=${process.env.HTTP_PROXY}`],
+      args: [proxyServer],
     });
     page = await browser.newPage();
     const client = await page.target().createCDPSession();
