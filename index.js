@@ -1,70 +1,85 @@
-const actionFunc = async (username, password, recipient, message) => {
-  console.log("textnow bot start...");
-  const path = require("path");
-  const fs = require("fs").promises;
-  const puppeteer = require("puppeteer");
-  const textNowHelper = require("./utils/helper");
+const actionFunc = async (username, password, cookies, recipient, message) => {
+  console.log('TextNow bot start...');
+  const path = require('path');
+  const fs = require('fs').promises;
+  const puppeteer = require('puppeteer');
+  const textNowHelper = require('./utils/helper');
 
   let browser = null;
   let page = null;
-  let md5Username = textNowHelper.md5(username).substr(0, 8);
+  let md5Username = textNowHelper.md5(username);
+
+  const cacheFolder = path.resolve(__dirname, '.cache');
+  try {
+    await fs.access(cacheFolder);
+  } catch (error) {
+    await fs.mkdir(cacheFolder);
+  }
 
   try {
     browser = await puppeteer.launch({
       headless: true,
+      args: [`--proxy-server=${process.env.HTTP_PROXY}`],
     });
     page = await browser.newPage();
     const client = await page.target().createCDPSession();
-    let cookies = null;
 
-    // Importing exsiting cookies from file
     try {
-      console.log("Importing existing cookies...");
-      const cookiesJSON = await fs.readFile(
-        path.resolve(__dirname, `.cahce/${md5Username}.cookies.json`)
-      );
-      cookies = JSON.parse(cookiesJSON);
+      console.log('Importing cookies from environment...');
+      cookies = JSON.parse(cookies);
     } catch (error) {
-      console.log("Failed to import existing cookies.");
+      console.log(`Environment cookies is invalid format: ${error}`);
+      try {
+        console.log('Importing existing cookies from file...');
+        const cookiesString = await fs.readFile(
+            path.resolve(cacheFolder, `${md5Username}.cookies.json`),
+        );
+        cookies = cookiesString.toJSON();
+      } catch (error) {
+        console.log(`Failed to import existing cookies: ${error}`);
+      }
     }
 
     // Log into TextNow and get cookies
     try {
-      console.log("Logging in with existing cookies");
+      console.log('Logging in with existing cookies');
       await page.setCookie(...cookies);
       cookies = await textNowHelper.logIn(page, client);
     } catch (error) {
-      console.log("Failed to log in with existing cookies.");
-      console.log("Logging in with account credentials...");
+      console.log(`Failed to log in with existing cookies: ${error}`);
+      console.log('Logging in with account credentials...');
       cookies = await textNowHelper.logIn(page, client, username, password);
     }
 
     try {
-      console.log("Successfully logged into TextNow!");
+      console.log('Successfully logged into TextNow!');
       // Save cookies to file
       await fs.writeFile(
-        path.resolve(__dirname, `.cahce/${md5Username}.cookies.json`),
-        JSON.stringify(cookies)
+          path.resolve(cacheFolder, `${md5Username}.cookies.json`),
+          JSON.stringify(cookies),
       );
     } catch (error) {
-      console.log("Failed to save cookies to file.");
+      console.log(`Failed to save cookies to file: ${error}`);
     }
 
     // Select a conversation using recipient info
-    console.log("Selecting conversation...");
+    console.log('Selecting conversation...');
     await textNowHelper.selectConversation(page, recipient);
 
     // Send a message to the current recipient
-    console.log("Sending message...");
+    console.log('Sending message...');
     await textNowHelper.sendMessage(page, message);
 
-    console.log("Message sent!");
+    console.log('Message sent!');
     await browser.close();
   } catch (error) {
     console.log(error);
 
     if (page) {
-      await page.screenshot({ path: "./error-screenshot.jpg", type: "jpeg" });
+      await page.screenshot({
+        path: path.resolve(cacheFolder, 'error-screenshot.jpg'),
+        type: 'jpeg',
+      });
     }
 
     if (browser) {
@@ -76,24 +91,26 @@ const actionFunc = async (username, password, recipient, message) => {
 };
 
 (async () => {
-  console.log("start...");
-  const config = require("./config");
+  console.log('Start...');
+  const config = require('./config');
 
-  const { username, password, recipient, message } = config;
-  const arrUsername = username.split("|");
-  const arrPassword = password.split("|");
+  const {username, password, cookies, recipient, message} = config;
+  const arrUsername = username.split('|');
+  const arrPassword = password.split('|');
+  const arrCookies = cookies.split('|');
   if (arrUsername.length === arrPassword.length) {
     for (let i = 0, length = arrUsername.length; i < length; i++) {
       const strUsername = arrUsername[i];
       const strPassword = arrPassword[i];
-
-      console.log(`User:${strUsername} start...`);
-      await actionFunc(strUsername, strPassword, recipient, message);
-      console.log(`User:${strUsername} end...`);
+      const strCookies = arrCookies[i];
+      console.log(`User: ${strUsername} start...`);
+      await actionFunc(strUsername, strPassword, strCookies,
+          recipient, message);
+      console.log(`User: ${strUsername} end...`);
     }
   } else {
-    console.log("User information is error.");
+    console.log('Multi user information is error.');
   }
 
-  console.log("end...");
+  console.log('End...');
 })();
