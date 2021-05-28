@@ -29,7 +29,7 @@ const actionFunc = async (username, password, cookies, recipient, message) => {
 
     try {
       console.log('Importing cookies from environment...');
-      cookies = JSON.parse(cookies);
+      cookies = JSON.parse(Buffer.from(cookies, 'base64').toString());
     } catch (error) {
       console.log(`Environment cookies is invalid format: ${error}`);
       try {
@@ -37,7 +37,7 @@ const actionFunc = async (username, password, cookies, recipient, message) => {
         const cookiesString = await fs.readFile(
             path.resolve(cacheFolder, `${md5Username}.cookies.json`),
         );
-        cookies = cookiesString.toJSON();
+        cookies = JSON.parse(cookiesString.toString());
       } catch (error) {
         console.log(`Failed to import existing cookies: ${error}`);
       }

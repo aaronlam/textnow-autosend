@@ -30,3 +30,9 @@ npm install
 npm start
 # or "yarn start"
 ```
+
+### 3. How to get cookies for TextNow
+1. Use Chrome to login to https://www.textnow.com/
+2. Install Chrome extension EditThisCookie: https://chrome.google.com/webstore/detail/fngmhnnpilhplaeedifhccceomclgfbg
+3. Use export function of EditThisCookie, all cookies will in clipboard
+4. Convert the clipboard cookies into base64 format: https://www.bejson.com/enc/base64/
