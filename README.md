@@ -26,7 +26,7 @@
 ### 2. Server Side
 
 ```bash
-git clone https://github.com/ye4241/textnow-autosend.git
+git clone https://github.com/aaronlam/textnow-autosend.git
 ```
 
 Modify config file, and execute script on the command line:
@@ -42,4 +42,7 @@ npm start
 1. Use Chrome to login to https://www.textnow.com/
 2. Install Chrome extension EditThisCookie: https://chrome.google.com/webstore/detail/fngmhnnpilhplaeedifhccceomclgfbg
 3. Use export function of EditThisCookie, all cookies will in clipboard
-4. Convert the clipboard cookies into base64 format: https://www.bejson.com/enc/base64/
+5. Convert the clipboard cookies into base64 format: https://www.bejson.com/enc/base64/
+
+### 4. Contributors
+1. [ye4241](https://github.com/ye4241)
