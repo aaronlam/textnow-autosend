@@ -73,6 +73,7 @@ const actionFunc = async (
       await page.setCookie(...cookies);
       cookies = await textNowHelper.logIn(page, client);
     } catch (error) {
+      await client.send('Network.clearBrowserCookies');
       console.log(`Failed to log in with existing cookies: ${error}`);
       console.log('Logging in with account credentials...');
       cookies = await textNowHelper.logIn(page, client, username, password);
