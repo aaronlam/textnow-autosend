@@ -48,7 +48,6 @@ const actionFunc = async (
     });
     page = await browser.newPage();
     page.setDefaultNavigationTimeout(0);
-    page.setDefaultTimeout(0);
     const client = await page.target().createCDPSession();
 
     try {
