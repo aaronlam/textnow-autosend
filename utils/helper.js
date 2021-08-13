@@ -28,7 +28,7 @@ module.exports.logIn = async (
     ]);
   }
 
-  if (page.url() === loginUrl && username && password) {
+  if (username && password) {
     await page.type('#txt-username', username);
     await page.type('#txt-password', password);
 
