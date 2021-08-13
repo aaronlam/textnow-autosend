@@ -14,7 +14,7 @@ module.exports.logIn = async (
   await Promise.all([
     page.goto(loginUrl),
     page.setDefaultNavigationTimeout(0),
-    page.waitForNavigation({waitUtil: 'domcontentloaded'}),
+    page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
 
   // Resolve captcha if found.
@@ -55,7 +55,7 @@ module.exports.logIn = async (
 module.exports.selectConversation = async (page, recipient) => {
   await Promise.all([
     page.goto(messagingUrl),
-    page.waitForNavigation({waitUtil: 'domcontentloaded'}),
+    page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
 
   await page.waitForTimeout(5000);
