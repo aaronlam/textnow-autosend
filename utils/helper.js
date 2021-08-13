@@ -13,7 +13,7 @@ module.exports.logIn = async (
     page, client, username = undefined, password = undefined) => {
   await Promise.all([
     page.goto(loginUrl),
-    page.waitForNavigation(),
+    page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
 
   // Resolve captcha if found.
@@ -33,7 +33,10 @@ module.exports.logIn = async (
     await page.type('#txt-password', password);
 
     const logInButton = await page.waitForSelector('#btn-login');
-    await Promise.all([logInButton.click(), page.waitForNavigation()]);
+    await Promise.all([
+      logInButton.click(),
+      page.waitForNavigation({waitUtil: 'networkidle2'}),
+    ]);
 
     return (await client.send('Network.getAllCookies')).cookies;
   }
@@ -54,7 +57,7 @@ module.exports.logIn = async (
 module.exports.selectConversation = async (page, recipient) => {
   await Promise.all([
     page.goto(messagingUrl),
-    page.waitForNavigation(),
+    page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
 
   await page.waitForTimeout(5000);
