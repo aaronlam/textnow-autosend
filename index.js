@@ -6,6 +6,7 @@ const actionFunc = async (
   const puppeteer = require('puppeteer-extra');
   const recaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
   const stealthPlugin = require('puppeteer-extra-plugin-stealth');
+  const adblockerPlugin = require('puppeteer-extra-plugin-adblocker');
   const textNowHelper = require('./utils/helper');
 
   let browser = null;
@@ -33,6 +34,7 @@ const actionFunc = async (
           }),
       );
     }
+    puppeteer.use(adblockerPlugin());
 
     browser = await puppeteer.launch({
       headless: true,
