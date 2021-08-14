@@ -55,6 +55,7 @@ const actionFunc = async (
       cookies = JSON.parse(Buffer.from(cookies, 'base64').toString());
     } catch (error) {
       console.log(`Environment cookies is invalid format: ${error}`);
+      cookies = null;
       try {
         console.log('Importing existing cookies from file...');
         const cookiesString = await fs.readFile(
@@ -63,16 +64,19 @@ const actionFunc = async (
         cookies = JSON.parse(cookiesString.toString());
       } catch (error) {
         console.log(`Failed to import existing cookies: ${error}`);
+        cookies = null;
       }
     }
 
     // Log into TextNow and get cookies
     try {
+      if (cookies === null) {
+        throw new Error("Cookies is null");
+      }
       console.log('Logging in with existing cookies');
       await page.setCookie(...cookies);
       cookies = await textNowHelper.logIn(page, client);
     } catch (error) {
-      await client.send('Network.clearBrowserCookies');
       console.log(`Failed to log in with existing cookies: ${error}`);
       console.log('Logging in with account credentials...');
       cookies = await textNowHelper.logIn(page, client, username, password);

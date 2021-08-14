@@ -43,6 +43,7 @@ module.exports.logIn = async (
 
   const isLoggedIn = page.url() === messagingUrl;
   if (!isLoggedIn) {
+    await client.send('Network.clearBrowserCookies');
     throw new Error('Detected invalid or expires cookies');
   }
 
