@@ -13,10 +13,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: "12.x"
+          node-version: '14'
       - name: Install dependencies
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
         run: npm install
       - name: Cache multi paths
         uses: actions/cache@v2
@@ -27,6 +29,7 @@ jobs:
           key: ${{ secrets.CACHE_NAME }}-${{ github.run_id }}
           restore-keys: ${{ secrets.CACHE_NAME }}-
       - name: Run autosend
+        uses: mujo-code/puppeteer-headful@master
         env:
           TEXTNOW_USERNAME: ${{secrets.TEXTNOW_USERNAME}}
           TEXTNOW_PASSWORD: ${{secrets.TEXTNOW_PASSWORD}}
@@ -34,5 +37,5 @@ jobs:
           TEXTNOW_RECIPIENT: ${{secrets.TEXTNOW_RECIPIENT}}
           TEXTNOW_MESSAGE: ${{secrets.TEXTNOW_MESSAGE}}
           CAPTCHA_TOKEN: ${{secrets.CAPTCHA_TOKEN}}
-        run: |
-          node index.js
+        with:
+          args: npm start

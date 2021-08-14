@@ -37,13 +37,13 @@ const actionFunc = async (
     puppeteer.use(adblockerPlugin());
 
     browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
+      executablePath: process.env.PUPPETEER_EXEC_PATH,
       args: [
         process.env.HTTP_PROXY ?
             `--proxy-server=${process.env.HTTP_PROXY}` :
             '',
-        '--disable-features=IsolateOrigins,site-per-process',
-        '--flag-switches-begin --disable-site-isolation-trials --flag-switches-end',
+        '--no-sandbox',
       ],
     });
     page = await browser.newPage();
