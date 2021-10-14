@@ -1,3 +1,6 @@
+const loginUrl = 'https://www.textnow.com/login';
+const messagingUrl = 'https://www.textnow.com/messaging';
+
 /**
  * Log into TextNow and get cookies
  * @param {object} page Puppeteer browser page
@@ -9,8 +12,7 @@
 module.exports.logIn = async (
     page, client, username = undefined, password = undefined) => {
   await Promise.all([
-    page.goto('https://www.textnow.com/login'),
-    page.setDefaultNavigationTimeout(0),
+    page.goto(loginUrl),
     page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
 
@@ -31,13 +33,17 @@ module.exports.logIn = async (
     await page.type('#txt-password', password);
 
     const logInButton = await page.waitForSelector('#btn-login');
-    await Promise.all([logInButton.click(), page.waitForNavigation()]);
+    await Promise.all([
+      logInButton.click(),
+      page.waitForNavigation({waitUtil: 'networkidle2'}),
+    ]);
 
     return (await client.send('Network.getAllCookies')).cookies;
   }
 
-  const isLoggedIn = page.url().includes('/messaging');
+  const isLoggedIn = page.url() === messagingUrl;
   if (!isLoggedIn) {
+    await client.send('Network.clearBrowserCookies');
     throw new Error('Detected invalid or expires cookies');
   }
 
@@ -51,7 +57,7 @@ module.exports.logIn = async (
  */
 module.exports.selectConversation = async (page, recipient) => {
   await Promise.all([
-    page.goto('https://www.textnow.com/messaging'),
+    page.goto(messagingUrl),
     page.waitForNavigation({waitUtil: 'networkidle2'}),
   ]);
 

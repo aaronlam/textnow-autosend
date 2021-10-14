@@ -6,6 +6,7 @@ const actionFunc = async (
   const puppeteer = require('puppeteer-extra');
   const recaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
   const stealthPlugin = require('puppeteer-extra-plugin-stealth');
+  const adblockerPlugin = require('puppeteer-extra-plugin-adblocker');
   const textNowHelper = require('./utils/helper');
 
   let browser = null;
@@ -33,18 +34,20 @@ const actionFunc = async (
           }),
       );
     }
+    puppeteer.use(adblockerPlugin());
 
     browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
+      executablePath: process.env.PUPPETEER_EXEC_PATH,
       args: [
         process.env.HTTP_PROXY ?
             `--proxy-server=${process.env.HTTP_PROXY}` :
             '',
-        '--disable-features=IsolateOrigins,site-per-process',
-        '--flag-switches-begin --disable-site-isolation-trials --flag-switches-end',
+        '--no-sandbox',
       ],
     });
     page = await browser.newPage();
+    page.setDefaultNavigationTimeout(0);
     const client = await page.target().createCDPSession();
 
     try {
@@ -52,6 +55,7 @@ const actionFunc = async (
       cookies = JSON.parse(Buffer.from(cookies, 'base64').toString());
     } catch (error) {
       console.log(`Environment cookies is invalid format: ${error}`);
+      cookies = null;
       try {
         console.log('Importing existing cookies from file...');
         const cookiesString = await fs.readFile(
@@ -60,11 +64,15 @@ const actionFunc = async (
         cookies = JSON.parse(cookiesString.toString());
       } catch (error) {
         console.log(`Failed to import existing cookies: ${error}`);
+        cookies = null;
       }
     }
 
     // Log into TextNow and get cookies
     try {
+      if (cookies === null) {
+        throw new Error("Cookies is null");
+      }
       console.log('Logging in with existing cookies');
       await page.setCookie(...cookies);
       cookies = await textNowHelper.logIn(page, client);
